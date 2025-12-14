@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Kafka Producer UI</title>
+  </head>
+  <body>
+    <h1>Kafka Producer</h1>
+    <input type="text" id="message" placeholder="Enter message" />
+    <button onclick="publishMessage()">Publish</button>
+
+    <p id="status"></p>
+    <h2>Consumer Messages</h2>
+    <ul id="messages"></ul>
+
+    <script>
+      const evtSource = new EventSource("/stream");
+      evtSource.onmessage = function (e) {
+        const li = document.createElement("li");
+        li.textContent = e.data;
+        document.getElementById("messages").appendChild(li);
+      };
+    </script>
+
+    <script>
+      async function publishMessage() {
+        const msg = document.getElementById("message").value;
+        if (!msg) return;
+
+        const res = await fetch("/publish", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text: msg }),
+        });
+
+        document.getElementById("status").innerText = await res.text();
+        document.getElementById("message").value = "";
+      }
+    </script>
+  </body>
+</html>

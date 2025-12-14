@@ -1,3 +1,5 @@
+using System.Text.Json;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -33,13 +35,33 @@ app.MapGet("/weatherforecast", () =>
 })
 .WithName("GetWeatherForecast");
 
-app.MapPost("/publish", async (KafkaProducer producer) =>
+app.MapPost("/publish", async (KafkaProducer producer, HttpRequest request) =>
 {
-    var message = new { Id = Guid.NewGuid(), CreatedAt = DateTime.UtcNow };
-    await producer.PublishAsync("test-topic", message.Id.ToString(), message);
-    return Results.Ok("Message published to Kafka");
+    var data = await JsonSerializer.DeserializeAsync<Dictionary<string, string>>(request.Body);
+    var message = data?["text"] ?? "default";
+
+    var msgObj = new { Id = Guid.NewGuid(), Text = message, CreatedAt = DateTime.UtcNow };
+    await producer.PublishAsync("test-topic", msgObj.Id.ToString(), msgObj);
+
+    return Results.Text("Message published to Kafka");
 });
 
+app.MapGet("/stream", async (HttpResponse response) =>
+{
+    response.Headers.Append("Content-Type", "text/event-stream"); 
+
+    var consumer = new KafkaConsumer("test-topic", "demo-group");
+
+    await foreach (var msg in consumer.ConsumeStream())
+    {
+        await response.WriteAsync($"data: {JsonSerializer.Serialize(msg)}\n\n");
+        await response.Body.FlushAsync();
+    }
+});
+
+
+app.UseDefaultFiles(); 
+app.UseStaticFiles();
 
 
 app.Run();
