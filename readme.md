@@ -1,6 +1,6 @@
-# Kafka Minimal API Demo
+# Kafka Minimal API Demo (.NET 10)
 
-This is a **.NET 7 Minimal API** project demonstrating a simple **Kafka Producer and Consumer** workflow with a browser UI.  
+This is a **.NET 10 Minimal API** project demonstrating a simple **Kafka Producer and Consumer** workflow with a browser UI.  
 
 Users can enter messages in the UI, publish them to Kafka, and see messages streamed live from the consumer.
 
@@ -8,7 +8,7 @@ Users can enter messages in the UI, publish them to Kafka, and see messages stre
 
 ## Features
 
-- Minimal API backend using **.NET 7**
+- Minimal API backend using **.NET 10**
 - Kafka **Producer** (`/publish` endpoint)
 - Kafka **Consumer** streaming via **Server-Sent Events** (`/stream` endpoint)
 - Browser UI to:
@@ -20,7 +20,7 @@ Users can enter messages in the UI, publish them to Kafka, and see messages stre
 
 ## Requirements
 
-- [.NET 7 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/7.0)  
+- [.NET 10 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/10.0)  
 - [Docker](https://www.docker.com/) (for Kafka & Zookeeper)  
 - Modern browser for UI  
 
